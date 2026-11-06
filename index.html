@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Estudo Java + Claude Code</title>
+<meta name="theme-color" content="#2F55D4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Estudo Java">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* Layout: cabeçalho com semana atual, abas (Hoje, Progresso, Quiz, Linha do tempo), conteúdo em grade que vira coluna única no celular. */
+:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202E; --muted:#5B6578; --line:#DDE2EB; --accent:#2F55D4;
+  --soft:#E8EDFA;
+  --t-logica:#2F55D4; --t-sql:#0B8F80; --t-git:#D2572A; --t-js:#B08A00; --t-html:#C93A6E; --t-css:#7A55CF; --t-ia:#0E8FB3; --t-diario:#5B6578;
+  --ok:#1E8A4C; --ok-bg:#E3F4EA; --doing:#A86A00; --doing-bg:#FBF0DA; --bad:#C2392B;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E131C; --surface:#161D29; --ink:#E7ECF4; --muted:#9AA5B8; --line:#273142; --accent:#7D9BFF; --soft:#1D2740;
+    --t-logica:#7D9BFF; --t-sql:#3CC7B5; --t-git:#F08356; --t-js:#E2BC3A; --t-html:#F06C9D; --t-css:#A88BF0; --t-ia:#4CC3E6; --t-diario:#9AA5B8;
+    --ok:#4CC98A; --ok-bg:#163326; --doing:#E6AE4A; --doing-bg:#3A2D12; --bad:#F07264;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E131C; --surface:#161D29; --ink:#E7ECF4; --muted:#9AA5B8; --line:#273142; --accent:#7D9BFF; --soft:#1D2740;
+  --t-logica:#7D9BFF; --t-sql:#3CC7B5; --t-git:#F08356; --t-js:#E2BC3A; --t-html:#F06C9D; --t-css:#A88BF0; --t-ia:#4CC3E6; --t-diario:#9AA5B8;
+  --ok:#4CC98A; --ok-bg:#163326; --doing:#E6AE4A; --doing-bg:#3A2D12; --bad:#F07264;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+h1{font:800 clamp(24px,4vw,34px)/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 small{display:block;font:500 14px/1.4 var(--body);color:var(--muted);margin-top:6px;letter-spacing:0}
+.weekchip{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+.chip.week{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.week b{color:#fff}
+.save{font-size:12px;color:var(--muted)}
+nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+nav.tabs a{padding:10px 14px;text-decoration:none;color:var(--muted);font-weight:600;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-color:var(--accent)}
+.view{display:none}
+.view.on{display:block}
+.grid2{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h2{font:700 19px/1.2 var(--display);margin:0 0 4px}
+.card .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+/* Timer */
+.timer{text-align:center}
+.mode{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:600;font-size:13px;background:var(--soft);color:var(--accent);margin-bottom:8px}
+.mode.pausa{background:var(--ok-bg);color:var(--ok)}
+.ring{position:relative;width:220px;height:220px;margin:6px auto 10px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{fill:none;stroke:var(--line);stroke-width:10}
+.ring .bar{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+.ring.pausa .bar{stroke:var(--ok)}
+.clock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.clock .t{font:700 50px/1 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.clock .now{font:600 17px/1.25 var(--body);color:var(--ink);margin-top:10px;max-width:160px;text-align:center;text-wrap:balance}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:340px;margin:0 auto}
+.btns .btn{width:100%;padding:9px 6px;line-height:1.25;white-space:nowrap}
+@media (max-width:420px){.btns .btn{white-space:normal}}
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:8px;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;transition:background .2s,border-color .2s}
+#bStart{background:var(--accent);border-color:var(--accent);color:#fff}
+#bStart.paused{background:color-mix(in srgb,var(--ok) 78%,#000);border-color:color-mix(in srgb,var(--ok) 78%,#000);color:#fff}
+#bStart:hover{filter:brightness(.94)}
+#bStart.running{background:var(--t-js);border-color:var(--t-js);color:#1F1A05}
+.cycles{margin-top:14px;font-size:13px;color:var(--muted)}
+.cycles b{color:var(--ink);font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:5px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.f{background:var(--accent)}
+/* Agenda */
+.agenda{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.agenda li{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid transparent;align-items:start}
+.agenda li .h{font:600 13px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.agenda li .tr{font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.agenda li .tr::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--c,var(--line));flex:none}
+.agenda li .what{color:var(--muted);font-size:14px}
+.agenda li.pause .tr{font-weight:500;color:var(--muted)}
+.agenda li.cur{background:var(--soft);border-color:var(--accent)}
+.agenda li.study{grid-template-columns:96px 1fr auto;cursor:pointer}
+.agenda li.study:hover{border-color:var(--line)}
+.agenda li.study.cur:hover{border-color:var(--accent)}
+.agenda li.done .what{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.agenda li.done .tr{color:var(--ok)}
+.chk{cursor:pointer;width:44px;height:44px;margin:-7px -6px -7px 0;border:0;background:none;padding:0;display:grid;place-items:center;flex:none;touch-action:manipulation}
+.chk .bx{width:28px;height:28px;border-radius:50%;border:2px solid #B9C0CC;background:var(--surface);display:grid;place-items:center;transition:background .15s,border-color .15s}
+.chk svg{width:16px;height:16px;opacity:0;color:#fff}
+.chk:hover .bx{border-color:var(--ok)}
+.chk.on .bx{background:var(--ok);border-color:var(--ok)}
+.chk.on svg{opacity:1}
+.daybar{display:flex;align-items:center;gap:10px;margin:-4px 0 12px;font-size:13px;color:var(--muted)}
+.daybar .pbar{flex:1;margin:0}
+.daybar button{border:0;background:none;color:var(--accent);font-weight:600;font-size:13px;padding:2px 4px}
+.badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--accent);color:#fff}
+.note{font-size:13px;color:var(--muted);margin-top:12px}
+.settings{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
+.settings input{padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+/* Progresso */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tile .n{font:800 30px/1 var(--display);font-variant-numeric:tabular-nums}
+.tile .l{font-size:13px;color:var(--muted);margin-top:6px}
+.pbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:10px}
+.pbar span{display:block;height:100%;background:var(--c,var(--accent));border-radius:99px;transition:width .3s}
+.sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;align-items:start}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0}
+details.sec summary{list-style:none;padding:14px 16px;cursor:default;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary .t{font:700 16px/1.25 var(--display)}
+details.sec summary .c{font:600 13px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+details.sec summary .pbar{grid-column:1/-1;margin-top:4px}
+details.sec[open] summary{border-bottom:1px solid var(--line)}
+.items{list-style:none;margin:0;padding:6px 8px 10px}
+.items li{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:7px 8px;border-radius:8px}
+.items li:hover{background:var(--bg)}
+.items .nm{font-size:14px}
+.items .meta{font-size:12px;color:var(--muted)}
+.st{min-width:112px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:600;color:var(--muted)}
+.st[data-s="1"]{background:var(--doing-bg);border-color:var(--doing);color:var(--doing)}
+.st[data-s="2"]{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.counter{display:flex;align-items:center;gap:6px}
+.counter button{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-weight:700}
+.counter span{font:600 13px var(--mono);min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
+/* Quiz */
+.themes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.themes button{border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:999px;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center}
+.themes button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.themes button small{font:500 12px var(--mono);opacity:.75}
+.modes{display:flex;gap:6px;margin-bottom:14px}
+.modes button{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:8px;font-weight:600;font-size:13px}
+.modes button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.q{max-width:720px}
+.q .count{font:600 12px var(--mono);color:var(--muted);letter-spacing:.04em}
+.q h3{font:700 21px/1.3 var(--display);margin:6px 0 16px;text-wrap:balance}
+.q code,.items code{font-family:var(--mono);font-size:.92em;background:var(--soft);padding:1px 5px;border-radius:4px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--bg);border-left:4px solid var(--accent);display:none}
+.fb.show{display:block}
+.fb b{display:block;margin-bottom:4px}
+.qnav{display:flex;gap:8px;margin-top:16px;align-items:center;flex-wrap:wrap}
+.flash{min-height:220px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:24px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.flash .side{font:600 12px var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.flash .txt{font:700 20px/1.35 var(--display)}
+.flash .ex{color:var(--muted)}
+/* Exercícios */
+.exhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px}
+.exh{font:700 22px/1.2 var(--display);margin:0 0 4px}
+.exhead .sub{color:var(--muted);font-size:14px;margin:0;max-width:640px}
+.exstat{font:600 13px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.exstat b{font:800 26px/1 var(--display);color:var(--ink)}
+.exfilters{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:12px 0 16px;border-bottom:1px solid var(--line);margin-bottom:18px;position:sticky;top:0;background:var(--bg);z-index:2}
+.exfilters select{margin-left:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.wk,.hide{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.trk{display:flex;flex-wrap:wrap;gap:6px}
+.trk button{border:1px solid var(--line);background:var(--surface);padding:5px 11px;border-radius:999px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.trk button i{width:9px;height:9px;border-radius:3px;background:var(--c,var(--muted))}
+.trk button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.exweek{margin-bottom:22px}
+.exweek h3{font:700 17px/1.2 var(--display);margin:0 0 2px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.exweek h3 span{font:600 12px var(--mono);color:var(--muted)}
+.exweek .ph{font-size:13px;color:var(--muted);margin:0 0 10px}
+.exgrp{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.exgrp > .gh{display:flex;align-items:center;gap:8px;padding:9px 14px;font-weight:600;font-size:14px;border-bottom:1px solid var(--line)}
+.exgrp > .gh::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--c)}
+.exgrp > .gh span{margin-left:auto;font:600 12px var(--mono);color:var(--muted)}
+.exitem{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
+.exitem:first-of-type{border-top:0}
+.exitem:hover{background:var(--bg)}
+.exitem input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--ok);cursor:pointer}
+.exitem .tx{font-size:15px;line-height:1.5}
+.exitem.done .tx{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.exitem code{font-family:var(--mono);font-size:.88em;background:var(--soft);padding:1px 5px;border-radius:4px}
+.lv{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;margin-top:2px}
+.lv1{background:var(--ok-bg);color:var(--ok)}
+.lv2{background:var(--doing-bg);color:var(--doing)}
+.lv3{background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--bad)}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.exlink{color:var(--accent);font-weight:600}
+/* Linha do tempo */
+.tl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px}
+.tl-wrap svg{display:block;min-width:960px;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;background:var(--c)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Estudo Java + Claude Code<small id="subtitle">Plano de 24 semanas, 7 horas de foco por dia</small></h1>
+    <div class="weekchip">
+      <span class="chip week" id="weekChip">Semana <b>1</b> de 24</span>
+      <span class="chip" id="phaseChip">Fase 1 · Lógica</span>
+      <span class="save" id="saveState" aria-live="polite">Carregando progresso…</span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Seções do app">
+    <a href="#hoje" data-view="hoje">Hoje</a>
+    <a href="#exercicios" data-view="exercicios">Exercícios</a>
+    <a href="#progresso" data-view="progresso">Progresso</a>
+    <a href="#quiz" data-view="quiz">Quiz de revisão</a>
+    <a href="#linha-do-tempo" data-view="linha-do-tempo">Linha do tempo</a>
+  </nav>
+
+  <!-- HOJE -->
+  <section class="view" id="v-hoje">
+    <div class="grid2">
+      <div class="card timer">
+        <h2>Timer de ciclos</h2>
+        <p class="sub">30 minutos de foco, 5 de pausa. Um sinal sonoro avisa a troca.</p>
+        <span class="mode" id="modeLabel">Foco</span>
+        <div class="ring" id="ring">
+          <svg viewBox="0 0 220 220" aria-hidden="true"><circle class="track" cx="110" cy="110" r="96"/><circle class="bar" id="ringBar" cx="110" cy="110" r="96"/></svg>
+          <div class="clock"><div class="t" id="tLeft">30:00</div><div class="now" id="tNow">Lógica com Java</div></div>
+        </div>
+        <div class="btns">
+          <button class="btn primary" id="bStart" type="button">Iniciar</button>
+          <button class="btn" id="bReset" type="button">Zerar</button>
+          <button class="btn" id="bSkip" type="button">Pausa curta (5&nbsp;min)</button>
+          <button class="btn" id="bLong" type="button">Pausa longa (15&nbsp;min)</button>
+        </div>
+        <div class="cycles">Ciclos de foco hoje: <b id="cyc">0</b> de 14
+          <div class="dots" id="dots" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 id="agTitle">Agenda de hoje</h2>
+        <p class="sub" id="agSub">O bloco destacado é o do horário atual.</p>
+        <div class="daybar"><span id="dayCount">0 de 7 etapas</span><div class="pbar" style="--c:var(--ok)"><span id="dayBar" style="width:0%"></span></div><button type="button" id="dayReset">Recomeçar o dia</button></div>
+        <ul class="agenda" id="agenda"></ul>
+        <p class="note" id="agNote"></p>
+        <div class="settings">
+          <label for="startDate">Início do plano (segunda da semana 1):</label>
+          <input type="date" id="startDate" value="2026-11-09">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXERCÍCIOS -->
+  <section class="view" id="v-exercicios">
+    <div class="exhead">
+      <div>
+        <h2 class="exh">Exercícios</h2>
+        <p class="sub" id="exSub">Faça no IntelliJ, sem IA escrevendo código por você. Marque quando rodar certo e você conseguir explicar cada linha.</p>
+      </div>
+      <div class="exstat" id="exStat"></div>
+    </div>
+    <div class="exfilters">
+      <label class="wk">Semana
+        <select id="exWeek"></select>
+      </label>
+      <div class="trk" id="exTracks" role="group" aria-label="Trilha"></div>
+      <label class="hide"><input type="checkbox" id="exHide"> Esconder os feitos</label>
+    </div>
+    <div id="exList"></div>
+  </section>
+
+  <!-- PROGRESSO -->
+  <section class="view" id="v-progresso">
+    <div class="tiles" id="tiles"></div>
+    <div class="sections" id="sections"></div>
+    <p class="note" style="margin-top:16px">Toque no status de cada item para alternar entre Pendente, Em andamento e OK. O progresso fica salvo no app e vale em qualquer dispositivo em que você abrir este link.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="view" id="v-quiz">
+    <div class="themes" id="themes" role="group" aria-label="Tema do quiz"></div>
+    <div class="modes" role="group" aria-label="Modo">
+      <button type="button" id="mQuiz" aria-pressed="true">Quiz</button>
+      <button type="button" id="mFlash" aria-pressed="false">Flashcards</button>
+    </div>
+    <div class="q" id="qArea"></div>
+  </section>
+
+  <!-- LINHA DO TEMPO -->
+  <section class="view" id="v-linha-do-tempo">
+    <div class="card" style="margin-bottom:14px">
+      <h2>As 24 semanas, trilha por trilha</h2>
+      <p class="sub" id="tlSub">A linha vertical marca a semana atual. Passe o mouse sobre uma barra para ver o nome completo.</p>
+      <div class="tl-wrap"><svg id="tl" viewBox="0 0 1000 340" role="img" aria-label="Linha do tempo das 24 semanas do plano"></svg></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- Dados do plano ---------- */
+const TR = {logica:{n:"Lógica com Java",c:"--t-logica"}, sql:{n:"SQL",c:"--t-sql"}, git:{n:"Git e GitHub",c:"--t-git"}, js:{n:"JavaScript",c:"--t-js"}, html:{n:"HTML",c:"--t-html"}, css:{n:"CSS",c:"--t-css"}, ia:{n:"IA e Claude Code",c:"--t-ia"}, diario:{n:"Diário e commit do dia",c:"--t-diario"}};
+
+const EMERSON = [["01","O que é o Java?",1],["02","Como o Java funciona",1],["03","Configurando o ambiente",1],["04","Variáveis e constantes",1],["05","Tipos de variáveis",1],["06","Operadores aritméticos",1],["07","Operadores relacionais e lógicos",1],["08","Estruturas condicionais",2],["10","Estruturas de repetição",3],["09","Arrays",4],["—","Erros comuns + Glossário","6"],["11","Programação Orientada a Objetos",7],["12","Encapsulamento",8],["13","Herança","9–10"],["14","Polimorfismo","9–10"],["15","Interfaces",11],["—","Desafio final: sistema de loja",12]];
+const GIT = ["Introdução ao Git e ao GitHub", "Conceitos básicos de versionamento", "Instalação e configuração do Git", "Conta no GitHub", "Identificação do usuário no Git", "Arquivos ocultos e extensões no sistema", "Chave SSH", "Editor de código", "Comandos essenciais do Git", "Primeiro projeto publicado no GitHub", "Novo commit", "Histórico de versões", "Navegação entre versões", "Branches", "Merge", "Pull request", "Arquivo .gitignore", "Encerramento do curso"];
+const REST = ["Visão geral do módulo", "O que é o Spring", "Instalação do banco de dados", "Ferramenta para testar a API", "Criação do projeto Spring", "Entidade do projeto", "Repositório e controller", "Primeiro endpoint de leitura", "Endpoint de criação", "Salvar dados (Create)", "Buscar por ID (Read)", "Excluir (Delete)", "Atualizar (Update)"];
+const ALURA = [["logica","Pensamento computacional","1–2"],["logica","Praticando Java: variáveis e tipos (opcional)","1"],["logica","Java: criando a sua primeira aplicação","2"],["logica","Praticando Java: condicionais if/else","2"],["logica","Praticando Java: laços for e while","3"],["logica","Praticando Java: Strings e regex (opcional)","5"],["sql","SQLite online: conhecendo instruções SQL","1–2"],["sql","SQL: explorando consultas e manipulação de dados","3+"],["sql","Realizando consultas com SQL: Joins, Views e transações","depois"],["html","HTML e CSS: ambiente, estrutura e estilo","1–2"],["html","HTML e CSS: ambientes de desenvolvimento, estrutura de arquivos e tags","3–5"],["css","HTML e CSS: classes, posicionamento e Flexbox","3–5"],["css","Praticando HTML e CSS","6+"],["js","Lógica de programação: mergulhe em programação com JavaScript","5+"],["js","Lógica de programação: explore funções e listas","depois"],["js","JavaScript: aprendendo a programar","depois"],["js","Lógica de programação: praticando com desafios","depois"],["ia","Claude Code: criando sua primeira aplicação","1–2"],["ia","Engenharia de Prompt: prompts eficazes para IA generativa","9–12"],["logica","Praticando Java: OO com classes, atributos e métodos","7"],["logica","Java: aplicando a Orientação a Objetos","7–9"],["logica","Praticando Java: herança, polimorfismo e interfaces","10"],["logica","Java: listas e coleções de dados","12"],["logica","Praticando Java: coleções e streams (opcional)","12"],["logica","Apostila: Exceções e Controle de Erros","13"],["git","Git e GitHub: dominando controle de versão","14"],["logica","Java: lambdas, streams e Spring Framework","19"],["logica","Spring Boot 3: desenvolva uma API Rest em Java","20–21"],["logica","Spring Boot 3: boas práticas e proteja uma API Rest","22"],["logica","TDD e Java: testes automatizados com JUnit","23"],["logica","Spring Data JPA (depois do plano)","depois"],["logica","Spring Boot 3: documente, teste e prepare para o deploy","depois"]];
+const ANTH = [["Claude Code 101","3–8"],["Claude Code in Action","13–16"],["Cursos avançados (subagentes, skills, MCP)","17–24"]];
+/* [semana, trilha, nível 1-3, enunciado]  Use `crases` para código. */
+const EX = [
+/* ===== JAVA · Fase 1 (aba Exercícios de Lógica do plano) ===== */
+[1,"logica",1,"Declare variáveis com seu nome, idade, altura e se você é estudante. Mostre tudo numa frase só."],
+[1,"logica",1,"Leia dois números inteiros e mostre a soma, a subtração, a multiplicação e a divisão."],
+[1,"logica",1,"Leia o ano de nascimento e mostre quantos anos a pessoa faz em 2026."],
+[1,"logica",1,"Leia uma temperatura em Celsius e converta para Fahrenheit (F = C × 1,8 + 32)."],
+[1,"logica",1,"Leia 3 notas e mostre a média com duas casas decimais (use `printf(\"%.2f\", media)`)."],
+[1,"logica",2,"Leia um valor em reais e o preço do dólar, e mostre quantos dólares dá para comprar."],
+[1,"logica",2,"Leia um número inteiro e mostre o antecessor, o sucessor, o dobro e a metade."],
+[1,"logica",2,"Leia o valor de um produto e o percentual de desconto, e mostre o valor final."],
+[1,"logica",2,"Leia uma quantidade de segundos (ex.: 3725) e mostre em horas, minutos e segundos (1h 2min 5s). Dica: `/` e `%`."],
+[1,"logica",2,"Troque o valor de duas variáveis `a` e `b` usando uma terceira variável."],
+[1,"logica",3,"Leia um número de 3 dígitos (ex.: 427) e mostre cada dígito separado: centena 4, dezena 2, unidade 7."],
+[1,"logica",3,"Explique, num comentário, por que `int x = 10 / 4;` vale 2 e `double y = 10 / 4;` vale 2.0, e não 2.5. Depois corrija para dar 2.5."],
+[2,"logica",1,"Leia um número e diga se ele é positivo, negativo ou zero."],
+[2,"logica",1,"Leia um número e diga se ele é par ou ímpar."],
+[2,"logica",1,"Leia a idade e diga se a pessoa pode votar (16 anos ou mais)."],
+[2,"logica",1,"Leia dois números e mostre o maior. Se forem iguais, avise."],
+[2,"logica",1,"Leia a média de um aluno: 7 ou mais é \"Aprovado\", de 5 a 6,9 é \"Recuperação\", abaixo de 5 é \"Reprovado\"."],
+[2,"logica",2,"Leia três números e mostre o maior, sem usar `Math.max`."],
+[2,"logica",2,"Leia o peso e a altura, calcule o IMC e mostre a faixa (abaixo do peso, normal, sobrepeso, obesidade)."],
+[2,"logica",2,"Leia um número de 1 a 7 e mostre o dia da semana usando `switch`. Fora dessa faixa, mostre \"Dia inválido\"."],
+[2,"logica",2,"Calculadora: leia dois números e um operador (`+`, `-`, `*`, `/`) e mostre o resultado. Trate a divisão por zero."],
+[2,"logica",2,"Leia um ano e diga se ele é bissexto (divisível por 4 e não por 100, ou divisível por 400)."],
+[2,"logica",3,"Leia os três lados de um triângulo. Diga se eles formam um triângulo e, se sim, se é equilátero, isósceles ou escaleno."],
+[2,"logica",3,"Ataque de RPG: leia o ataque do personagem, a defesa do inimigo e se foi acerto crítico (s/n). Dano = ataque − defesa (mínimo 0); se for crítico, o dano dobra. Mostre o dano final."],
+[3,"logica",1,"Mostre os números de 1 a 100."],
+[3,"logica",1,"Mostre os números pares de 0 a 50."],
+[3,"logica",1,"Faça uma contagem regressiva de 10 até 0 e mostre \"Fogo!\" no final."],
+[3,"logica",1,"Leia um número e mostre a tabuada dele, de 1 a 10."],
+[3,"logica",1,"Some todos os números de 1 a 100 e mostre o total (deve dar 5050)."],
+[3,"logica",2,"Leia números até o usuário digitar 0. Mostre quantos foram digitados, a soma e a média."],
+[3,"logica",2,"Leia um número e calcule o fatorial dele (5! = 5 × 4 × 3 × 2 × 1 = 120)."],
+[3,"logica",2,"Leia um número e diga se ele é primo."],
+[3,"logica",2,"Menu com `do-while`: mostre as opções 1-Somar, 2-Subtrair, 0-Sair, e repita até o usuário escolher 0."],
+[3,"logica",2,"Validação: peça uma nota e continue pedindo enquanto ela não estiver entre 0 e 10."],
+[3,"logica",3,"Mostre os 15 primeiros termos da sequência de Fibonacci (0, 1, 1, 2, 3, 5, 8...)."],
+[3,"logica",3,"Jogo de adivinhação: o programa sorteia um número de 1 a 100 (`new Random().nextInt(100) + 1`); o jogador tenta, o programa responde \"maior\" ou \"menor\" e, no fim, mostra quantas tentativas foram usadas."],
+[3,"logica",3,"Desenhe um triângulo de asteriscos com a altura digitada, usando um laço dentro do outro."],
+[4,"logica",1,"Crie um array com 5 nomes e mostre cada um com a sua posição."],
+[4,"logica",1,"Leia 5 números, guarde num array e mostre-os na ordem inversa."],
+[4,"logica",1,"Leia 10 números e mostre a soma e a média."],
+[4,"logica",1,"Leia 8 números e conte quantos são pares."],
+[4,"logica",1,"Provoque de propósito um `ArrayIndexOutOfBoundsException`, leia a mensagem de erro e explique, num comentário, o que ela diz."],
+[4,"logica",2,"Leia 10 números e mostre o maior, o menor e em que posição cada um estava."],
+[4,"logica",2,"Leia 6 notas e mostre quantas ficaram acima da média da turma."],
+[4,"logica",2,"Use um `ArrayList<String>` para cadastrar nomes até o usuário digitar \"fim\". Depois mostre a lista e o total."],
+[4,"logica",2,"Na lista do exercício anterior, peça um nome e diga se ele está cadastrado. Faça primeiro com um `for` e depois compare com `contains`."],
+[4,"logica",2,"Junte dois arrays de 5 números num terceiro array de 10."],
+[4,"logica",3,"Leia 10 números e mostre-os sem repetições (ex.: 3, 5, 3, 7, 5 → 3, 5, 7)."],
+[4,"logica",3,"Inventário de RPG com `ArrayList`: menu para adicionar item, remover item, listar itens e sair. Não deixe passar de 10 itens."],
+[5,"logica",1,"Método `somar(int[] v)` que devolve a soma dos elementos."],
+[5,"logica",1,"Método `contar(int[] v, int alvo)` que devolve quantas vezes `alvo` aparece."],
+[5,"logica",1,"Método `maior(int[] v)` e método `menor(int[] v)`."],
+[5,"logica",1,"Busca linear: método `posicao(int[] v, int alvo)` que devolve o índice do valor, ou -1 se não achar."],
+[5,"logica",2,"Inverta um array no mesmo array, trocando o primeiro com o último, o segundo com o penúltimo, e assim por diante."],
+[5,"logica",2,"Diga se uma palavra é palíndromo (\"arara\", \"ovo\"). Dica: `palavra.charAt(i)`."],
+[5,"logica",2,"Conte quantas vogais tem uma frase."],
+[5,"logica",2,"Ordenação Bubble Sort: ordene um array de 8 números em ordem crescente. Antes de programar, faça no papel com 4 números."],
+[5,"logica",2,"Diga se um array está ordenado ou não."],
+[5,"logica",3,"Busca binária num array já ordenado. Conte quantas comparações ela faz e compare com a busca linear."],
+[5,"logica",3,"Ordenação Selection Sort. Depois escreva, num comentário, a diferença entre ela e o Bubble Sort."],
+[5,"logica",3,"Mostre todos os números primos entre 1 e 200 usando o exercício de primo do tema 3, agora transformado em `static boolean ehPrimo(int n)`."],
+[6,"logica",2,"Caixa eletrônico: leia um valor de saque e mostre quantas notas de 100, 50, 20, 10, 5 e 2 são necessárias, usando o menor número de notas."],
+[6,"logica",2,"Boletim: leia o nome e 4 notas de 5 alunos. Mostre a média e a situação de cada um, a maior média da turma e quantos foram aprovados."],
+[6,"logica",2,"Senha forte: leia uma senha e diga se ela tem pelo menos 8 caracteres, uma letra maiúscula e um número. Dica: `Character.isUpperCase` e `Character.isDigit`."],
+[6,"logica",2,"Pedra, papel e tesoura contra o computador, em melhor de 5 rodadas, com placar."],
+[6,"logica",3,"Miniprojeto Arena de Lógica: batalha de RPG em texto, sem classes. Turnos num `while`, menu Atacar/Curar (máx. 3)/Fugir, dano aleatório de 70% a 130% com 10% de crítico, histórico num `ArrayList<String>` e os métodos `calcularDano`, `mostrarStatus` e `turnoDoMonstro`."],
+
+/* ===== JAVA · Fase 2: Orientação a Objetos ===== */
+[7,"logica",1,"Crie a classe `Personagem` com nome, classe, nível e vida. No `main`, crie 2 objetos e mostre os dados de cada um."],
+[7,"logica",1,"Adicione o método `mostrarFicha()`, que imprime os atributos do personagem formatados."],
+[7,"logica",2,"Crie um construtor que recebe nome e classe e começa o personagem no nível 1 com 100 de vida."],
+[7,"logica",2,"Método `subirNivel()`: aumenta o nível em 1 e a vida máxima em 10."],
+[7,"logica",2,"Classe `ContaBancaria` com titular, saldo e os métodos `depositar` e `sacar`. O saque não pode deixar o saldo negativo."],
+[7,"logica",3,"Classe `Item` (nome, peso, valor). Dê ao `Personagem` um array de itens e o método `adicionarItem`, que recusa o item se passar do peso máximo."],
+[8,"logica",1,"Deixe todos os atributos de `Personagem` como `private` e crie os getters."],
+[8,"logica",2,"Crie `setVida`, que nunca aceita vida negativa nem acima da vida máxima."],
+[8,"logica",2,"Classe `Produto` com preço privado. `setPreco` recusa valores menores ou iguais a zero e mostra uma mensagem."],
+[8,"logica",2,"Explique num comentário por que `Personagem` não deveria ter `setNivel`, e qual método faz esse papel."],
+[8,"logica",3,"Na `ContaBancaria`, guarde um histórico de transações privado num `ArrayList<String>` e crie um método que devolve uma cópia dele, não a lista original."],
+[9,"logica",1,"Classe `Guerreiro extends Personagem` com o atributo força."],
+[9,"logica",1,"Classe `Mago extends Personagem` com o atributo mana. Use `super(...)` no construtor."],
+[9,"logica",2,"Sobrescreva `mostrarFicha()` em cada subclasse, chamando `super.mostrarFicha()` antes de mostrar o atributo extra."],
+[9,"logica",2,"Hierarquia `Funcionario` → `Gerente` e `Desenvolvedor`, cada um com uma regra diferente de bônus no salário."],
+[9,"logica",3,"Classe `Arqueiro` com flechas. O método `atacar()` gasta uma flecha e falha quando elas acabam."],
+[10,"logica",1,"Crie um `ArrayList<Personagem>` com um guerreiro, um mago e um arqueiro, e percorra a lista chamando `atacar()` em cada um."],
+[10,"logica",2,"Sobrescreva `calcularDano()` em cada classe com uma regra diferente e veja o polimorfismo em ação na lista."],
+[10,"logica",2,"Formas: classe `Forma` com `area()`, e as subclasses `Circulo`, `Retangulo` e `Triangulo`. Some as áreas de uma lista de formas."],
+[10,"logica",2,"Use `instanceof` para mostrar a mana só dos magos. Num comentário, explique por que muitos `instanceof` são sinal de que falta polimorfismo."],
+[10,"logica",3,"Torne `Personagem` uma classe `abstract`, com o método abstrato `habilidadeEspecial()` implementado em cada subclasse."],
+[11,"logica",1,"Interface `Curavel` com o método `curar(int quantidade)`. Implemente em `Personagem`."],
+[11,"logica",2,"Interface `Atacavel`, implementada por `Personagem` e por uma nova classe `Monstro`. Escreva `batalha(Atacavel a, Atacavel b)`."],
+[11,"logica",2,"Implemente `Comparable<Personagem>` para ordenar personagens por nível."],
+[11,"logica",2,"Interface `Pagamento` com `calcularTaxa()`, implementada por `Pix`, `Cartao` e `Boleto`."],
+[11,"logica",3,"Num comentário, explique a diferença entre classe abstrata e interface usando um exemplo do seu próprio código."],
+[12,"logica",1,"`ArrayList` de personagens com as operações adicionar, remover pelo nome e listar."],
+[12,"logica",2,"Inventário com `HashMap<String, Integer>`: item → quantidade. Adicionar soma na quantidade existente."],
+[12,"logica",2,"Conte quantas vezes cada palavra aparece numa frase usando `HashMap`."],
+[12,"logica",2,"Ordene a lista de personagens por nome usando um `Comparator`."],
+[12,"logica",3,"Ficha v5: o `Personagem` guarda o inventário numa `List<Item>` e calcula o peso total."],
+[12,"logica",3,"Desafio final do curso de Java: sistema de loja."],
+
+/* ===== JAVA · Fase 3: Análise de código ===== */
+[13,"logica",1,"Leia um número com `Scanner` e trate o `InputMismatchException`, pedindo de novo até o usuário digitar um número."],
+[13,"logica",1,"Divisão de dois inteiros com `try/catch` de `ArithmeticException`."],
+[13,"logica",2,"Crie a exceção `VidaInvalidaException` e lance-a em `setVida` quando o valor for inválido."],
+[13,"logica",2,"Use `finally` para fechar o `Scanner`. Explique num comentário quando o `finally` roda."],
+[13,"logica",3,"Na `ContaBancaria`, lance uma `SaldoInsuficienteException` (checked) no saque e trate no `main`."],
+[14,"logica",1,"Coloque um breakpoint no laço de batalha e anote os valores de vida durante 3 turnos."],
+[14,"logica",2,"Provoque um `NullPointerException`, leia a stack trace e explique, linha por linha, o que ela diz."],
+[14,"logica",2,"Durante uma pausa no depurador, use Evaluate Expression (Alt+F8) para testar uma condição."],
+[14,"logica",2,"Caça ao bug: peça ao Claude Code um código de arrays com 3 bugs escondidos, sem dizer onde. Ache os bugs com o depurador."],
+[14,"logica",3,"Caça ao bug 2: o mesmo desafio com um código orientado a objetos, com um bug de herança."],
+[15,"logica",1,"Renomeie as variáveis de 3 exercícios antigos com nomes claros, usando Shift+F6."],
+[15,"logica",2,"Quebre um `main` grande em métodos de até 15 linhas cada."],
+[15,"logica",2,"Troque os números mágicos de um exercício por constantes `static final`."],
+[15,"logica",2,"Peça ao Claude Code uma revisão com o checklist da Fase 3 e aplique você mesmo 3 sugestões."],
+[15,"logica",3,"Refatore a Arena de Lógica para usar as classes `Personagem` e `Monstro`."],
+[16,"logica",2,"Classe `Batalha`, que recebe dois `Atacavel` e tem o método `executarTurno()`."],
+[16,"logica",2,"Iniciativa: quem tem mais agilidade ataca primeiro em cada turno."],
+[16,"logica",2,"Guarde o log da batalha numa `List<String>` e mostre um resumo no final."],
+[16,"logica",3,"Habilidades com recarga: só podem ser usadas a cada 3 turnos."],
+[16,"logica",3,"Batalha em grupo: 3 heróis contra 2 monstros, e cada monstro ataca o herói com menos vida."],
+
+/* ===== JAVA · Fase 4: Spring Boot ===== */
+[17,"logica",1,"Gere o projeto no Spring Initializr com Web, JPA e PostgreSQL, e faça ele rodar."],
+[17,"logica",1,"Teste no Insomnia o `GET /products` e salve a requisição numa coleção."],
+[17,"logica",2,"Adicione o campo categoria em `Product` e confira a coluna nova no banco."],
+[17,"logica",2,"`GET /products/{id}` deve devolver 404 quando o produto não existe (use `ResponseEntity`)."],
+[17,"logica",3,"`GET /products?nome=...`, buscando por parte do nome com um método do repositório (`findByNomeContaining`)."],
+[18,"logica",2,"Projeto `ficha-api` com a entidade `Personagem` (id, nome, classe, nível, vida)."],
+[18,"logica",2,"CRUD completo de personagem, testado no Insomnia."],
+[18,"logica",2,"Endpoint `POST /personagens/{id}/subir-nivel`."],
+[18,"logica",3,"Entidade `Item` com `@ManyToOne` para `Personagem`, e o endpoint `GET /personagens/{id}/itens`."],
+[18,"logica",3,"README da `ficha-api` com exemplos de requisição, e push no GitHub."],
+[19,"logica",1,"Reescreva um `Comparator` antigo usando lambda."],
+[19,"logica",1,"Imprima uma lista com `forEach` e lambda."],
+[19,"logica",2,"Com stream, filtre os personagens com nível maior ou igual a 5."],
+[19,"logica",2,"Com `map` e `collect`, gere a lista de nomes em maiúsculas."],
+[19,"logica",2,"Calcule a média de vida com `mapToInt(...).average()`."],
+[19,"logica",3,"Agrupe os personagens por classe com `Collectors.groupingBy`."],
+[20,"logica",1,"Siga o projeto do curso e faça um commit com mensagem descritiva a cada aula."],
+[20,"logica",2,"Na `ficha-api`, use um DTO (`record`) na entrada do `POST`."],
+[20,"logica",2,"Bean Validation: `@NotBlank` no nome e `@Min(1)` no nível. Teste um envio inválido."],
+[20,"logica",2,"Paginação: `GET /personagens?page=0&size=5` com `Pageable`."],
+[21,"logica",2,"`PUT` que atualiza só os campos enviados."],
+[21,"logica",2,"Exclusão lógica: campo `ativo`, e o `DELETE` só marca como inativo."],
+[21,"logica",3,"Migrations com Flyway: crie a V1 e a V2 em vez de usar `ddl-auto`."],
+[21,"logica",3,"Endpoint de ranking com os 3 personagens de maior nível."],
+[22,"logica",2,"Tratamento global de erros com `@RestControllerAdvice`, com respostas 404 e 400 padronizadas."],
+[22,"logica",2,"O `POST` deve devolver 201 Created com o cabeçalho Location."],
+[22,"logica",3,"Proteja `POST`, `PUT` e `DELETE` como no curso, deixando o `GET` livre."],
+[22,"logica",2,"Peça ao Claude Code uma revisão da API e registre numa issue do GitHub o que você vai corrigir."],
+
+/* ===== JAVA · Fase 5: JUnit ===== */
+[23,"logica",1,"Primeiro teste: `assertEquals` num método `somar`."],
+[23,"logica",2,"Testes de `calcularDano`: caso normal, defesa maior que o ataque (dano 0) e acerto crítico."],
+[23,"logica",2,"TDD: escreva o teste de `ehPrimo` antes de implementar, veja falhar, depois implemente."],
+[23,"logica",2,"Use `assertThrows` para testar a `VidaInvalidaException`."],
+[23,"logica",3,"`@ParameterizedTest` para testar vários anos bissextos e não bissextos."],
+[24,"logica",2,"Teste o service de personagem com Mockito, usando um mock do repository."],
+[24,"logica",2,"Teste o controller com `MockMvc`: `GET` com 200 e com 404."],
+[24,"logica",3,"Rode os testes com cobertura no IntelliJ e chegue a 70% no service."],
+[24,"logica",3,"GitHub Actions rodando os testes a cada push. Entenda cada linha do arquivo antes de subir."],
+
+/* ===== SQL ===== */
+[1,"sql",1,"Crie a tabela `personagem` (id, nome, classe, nivel, vida) no SQLite online."],
+[1,"sql",1,"Insira 5 personagens com `INSERT INTO`."],
+[1,"sql",1,"Consulte tudo com `SELECT *` e depois só nome e nível."],
+[1,"sql",2,"Filtre com `WHERE nivel > 3` e ordene com `ORDER BY nivel DESC`."],
+[2,"sql",1,"`UPDATE` na vida de um personagem pelo id."],
+[2,"sql",1,"`DELETE` de um personagem pelo id. Rode antes um `SELECT` com o mesmo `WHERE` para conferir."],
+[2,"sql",2,"Use `LIKE` para achar nomes que começam com \"A\"."],
+[2,"sql",2,"Use `COUNT`, `AVG(nivel)` e `MAX(vida)`."],
+[2,"sql",3,"`GROUP BY classe`, mostrando a quantidade e a média de nível de cada classe."],
+[3,"sql",2,"Crie a tabela `item` com `personagem_id` e insira itens para alguns personagens."],
+[3,"sql",2,"`INNER JOIN` mostrando cada item com o nome do dono."],
+[4,"sql",2,"`LEFT JOIN` para listar os personagens sem nenhum item."],
+[4,"sql",2,"`HAVING`: mostre só as classes com mais de 2 personagens."],
+[5,"sql",2,"Subconsulta: personagens com nível acima da média."],
+[5,"sql",2,"Use `BETWEEN` e `IN` em duas consultas diferentes."],
+[6,"sql",3,"Liste o nome de cada personagem e o valor total dos seus itens, do maior para o menor."],
+[8,"sql",2,"Tabelas `missao` e `personagem_missao` (muitos para muitos) e uma consulta com dois joins."],
+[10,"sql",3,"Crie uma view `ranking` com nome, classe e nível, ordenada por nível."],
+[12,"sql",3,"Transação: transfira ouro entre dois personagens com `BEGIN` e `COMMIT`, e teste um `ROLLBACK`."],
+[14,"sql",3,"Desenhe no papel o banco da Ficha (personagem, item, missão) e crie o script `schema.sql` no GitHub."],
+[17,"sql",2,"Conecte o IntelliJ ao PostgreSQL (aba Database) e consulte a tabela criada pelo Spring."],
+[18,"sql",2,"Escreva no repositório Spring uma `@Query` equivalente a uma consulta SQL sua."],
+
+/* ===== GIT ===== */
+[3,"git",1,"Configure `user.name` e `user.email` e confira com `git config --list`."],
+[3,"git",1,"Numa pasta de teste: `git init`, crie um arquivo, `git add` e `git commit`."],
+[3,"git",1,"Faça 3 commits e veja o histórico com `git log --oneline`."],
+[3,"git",2,"Volte a uma versão antiga com `git checkout <hash>` e retorne para a `main`."],
+[3,"git",2,"Crie a branch `feature/readme`, faça um commit nela e um merge na `main`."],
+[3,"git",2,"Crie um `.gitignore` com `.idea/` e `out/` e confira o efeito com `git status`."],
+[4,"git",1,"Publique o projeto `logica-java` no GitHub."],
+[4,"git",2,"Provoque um conflito de merge de propósito e resolva."],
+[4,"git",2,"Abra um Pull Request no seu próprio repositório e faça o merge pelo GitHub."],
+[4,"git",2,"Faça o fluxo completo (branch, commit, push, pull) só pelo IntelliJ."],
+[4,"git",2,"Escreva um `README.md` com título, descrição e como rodar o projeto."],
+[14,"git",2,"`git stash`: guarde uma mudança pela metade, troque de branch e volte para ela."],
+[14,"git",2,"Desfaça um commit errado com `git revert`, sem apagar o histórico."],
+[14,"git",3,"Durante uma semana, escreva commits no padrão `feat:`, `fix:` e `docs:`."],
+[18,"git",2,"Crie uma issue para cada endpoint da `ficha-api` e feche cada uma pelo commit (\"closes #1\")."],
+
+/* ===== HTML ===== */
+[1,"html",1,"Página sobre você com `h1`, parágrafo, lista e uma imagem com `alt`."],
+[1,"html",1,"Links: um para o seu GitHub, abrindo em nova aba, e uma âncora para outra parte da página."],
+[2,"html",1,"Tabela com o seu cronograma da semana."],
+[2,"html",2,"Formulário de contato com nome, e-mail, mensagem e botão, cada campo com `label`."],
+[3,"html",1,"Reestruture a página com `header`, `nav`, `main`, `section` e `footer`."],
+[3,"html",2,"Página \"Minha Ficha de Personagem\" com os atributos numa lista de definição (`dl`)."],
+[4,"html",2,"Valide o HTML no validator.w3.org e corrija os avisos."],
+[4,"html",2,"Formulário de criação de personagem com `select` de classe, nível com `min` e `max`, e `radio`."],
+[5,"html",3,"Site de 3 páginas (início, projetos, contato) com navegação entre elas."],
+[6,"html",2,"Estrutura do portfólio: seções sobre, projetos e contato."],
+[8,"html",2,"Um card para cada projeto do GitHub (`logica-java`, Ficha), com link."],
+[10,"html",2,"Navegue pelo portfólio só com a tecla Tab e ajuste a ordem e os textos dos links."],
+[13,"html",2,"Publique o portfólio no GitHub Pages."],
+[18,"html",2,"Página do projeto `ficha-api` com exemplos de requisição em `<pre><code>`."],
+[20,"html",2,"Meta tags de descrição e Open Graph para o link do portfólio ficar bonito ao compartilhar."],
+
+/* ===== CSS ===== */
+[1,"css",1,"Mude as cores e as fontes da página sobre você, num arquivo `style.css` separado."],
+[1,"css",1,"Use uma classe e um id. Explique num comentário a diferença entre os dois."],
+[2,"css",2,"Box model: um card com padding, border e margin. Inspecione no DevTools (F12)."],
+[2,"css",2,"Estilize o formulário: campos com largura total e botão com efeito de hover."],
+[3,"css",2,"Menu horizontal com Flexbox."],
+[3,"css",2,"Grade de 3 cards com `flex-wrap` e `gap`."],
+[4,"css",2,"Centralize um elemento na vertical e na horizontal com Flexbox."],
+[4,"css",2,"Use `position: relative` e `absolute` para um selo \"novo\" no canto de um card."],
+[5,"css",3,"Ficha de personagem estilizada como carta de jogo, com barras de vida e mana feitas com `div`."],
+[6,"css",2,"Responsivo: uma media query que empilha os cards abaixo de 600px."],
+[8,"css",2,"Variáveis CSS (`--cor-primaria`) para as cores do portfólio."],
+[10,"css",3,"CSS Grid no layout principal do portfólio."],
+[13,"css",2,"Modo escuro com `prefers-color-scheme`."],
+[16,"css",2,"Transição suave no hover dos cards com `transition`."],
+[20,"css",3,"Recrie só a estrutura de um site que você gosta, usando Grid e Flexbox."],
+
+/* ===== JAVASCRIPT ===== */
+[5,"js",1,"No console: `let` e `const`, e mostre nome e idade com template string."],
+[5,"js",1,"Par ou ímpar com `if`."],
+[5,"js",1,"Tabuada com `for`."],
+[5,"js",2,"Refaça 3 exercícios de condicionais do Java em JavaScript e anote as diferenças num comentário."],
+[6,"js",2,"Função `calcularMedia(notas)` que recebe um array."],
+[6,"js",2,"Array de nomes com `push`, `includes` e `forEach`."],
+[6,"js",2,"Maior número de um array, sem `Math.max`."],
+[7,"js",2,"Botão na página que mostra uma mensagem (`addEventListener`)."],
+[7,"js",2,"Contador com botões + e −."],
+[8,"js",2,"Lista de tarefas: um campo e um botão que adiciona itens à lista."],
+[9,"js",2,"Objeto personagem `{nome, vida}` e a função `atacar(alvo)`."],
+[10,"js",2,"`map`, `filter` e `reduce` num array de personagens."],
+[11,"js",3,"Rolador de dados: um botão sorteia 1d20 e mostra o histórico."],
+[13,"js",2,"Formulário de criação de personagem que valida os campos e mostra a ficha na página."],
+[14,"js",3,"Salve a ficha no `localStorage` e mostre de novo ao recarregar."],
+[16,"js",3,"Mini batalha no navegador: barras de vida que diminuem a cada ataque."],
+[18,"js",2,"`fetch` numa API pública (como a PokéAPI) e mostre os dados na página."],
+[21,"js",3,"`fetch` na sua `ficha-api` local (`GET /personagens`) e liste na página. Vai aparecer erro de CORS: entenda e resolva."],
+[23,"js",3,"Formulário que cria um personagem com `POST` na `ficha-api`."],
+
+/* ===== IA E CLAUDE CODE ===== */
+[1,"ia",1,"Instale o Claude Code e crie o `CLAUDE.md` do projeto `logica-java` com o modo professor."],
+[1,"ia",1,"Peça a explicação de divisão inteira com um exemplo que não seja um dos seus exercícios."],
+[2,"ia",2,"Resolva um exercício sozinho, peça só a revisão (sem código) e anote 2 aprendizados no diário."],
+[3,"ia",1,"Rode `/init` num projeto de teste e compare o `CLAUDE.md` gerado com o seu."],
+[4,"ia",2,"Peça ao Claude Code 5 perguntas sobre o seu código de laços e responda sem olhar."],
+[5,"ia",2,"Peça a explicação de um erro de compilação que você não entendeu, sem a correção."],
+[6,"ia",2,"Peça 3 exercícios extras do tema da semana, sem solução."],
+[9,"ia",2,"Reescreva um prompt vago em 3 versões cada vez mais específicas e compare as respostas."],
+[10,"ia",2,"Prompt com papel, contexto, tarefa e formato para revisar a sua classe `Personagem`."],
+[11,"ia",2,"Few-shot: dê 2 exemplos de mensagem de commit e peça mensagens para as suas mudanças."],
+[13,"ia",2,"Modo de planejamento: peça um plano para o sistema de batalha antes de programar e critique o plano."],
+[15,"ia",3,"Revise linha por linha uma mudança proposta. Recuse o que não entender e pergunte o porquê."],
+[17,"ia",2,"Peça a explicação da estrutura do projeto Spring (pacotes e anotações)."],
+[19,"ia",3,"Crie um comando personalizado no projeto, como `/revisar`, com o checklist da Fase 3."],
+[23,"ia",3,"Peça testes JUnit ao Claude Code e quebre o código de propósito para ver os testes falharem."],
+[24,"ia",3,"Configure um servidor MCP (por exemplo, do GitHub) e use-o para abrir uma issue."]
+];
+
+/* ids estáveis: trilha + semana + ordem */
+(function(){const c={};EX.forEach(e=>{const k=e[1]+e[0];c[k]=(c[k]||0)+1;e.id=k+"-"+c[k];});})();
+const EXERC = [["Tema 1: Variáveis e tipos",12],["Tema 2: Condicionais",12],["Tema 3: Laços",13],["Tema 4: Arrays e listas",12],["Tema 5: Algoritmos básicos",12],["Tema 6: Desafios + Arena de Lógica",5]];
+
+const SECTIONS = [
+  {id:"e", t:"Curso em Java", sub:"Fundamentos de Java", c:"--t-logica", items:EMERSON.map(r=>({nm:(r[0]!=="—"?"Cap. "+r[0]+" · ":"")+r[1], meta:"Semana "+r[2]}))},
+  {id:"g", t:"Git e GitHub", sub:"Semanas 3 e 4", c:"--t-git", items:GIT.map((t,i)=>({nm:"Aula "+String(i+1).padStart(2,"0")+" · "+t, meta:"Semana 3"}))},
+  {id:"r", t:"REST API com Spring Boot", sub:"Semana 17", c:"--t-logica", items:REST.map((t,i)=>({nm:"Aula "+String(i+1).padStart(2,"0")+" · "+t, meta:"Semana 17"}))},
+  {id:"a", t:"Cursos da Alura", sub:"Um curso por linha", c:"--t-css", items:ALURA.map(r=>({nm:r[1], meta:TR[r[0]].n+" · semana "+r[2], tr:r[0]}))},
+  {id:"x", t:"Anthropic Academy", sub:"Claude Code, em inglês", c:"--t-ia", items:ANTH.map(r=>({nm:r[0], meta:"Semanas "+r[1]}))}
+];
+SECTIONS.forEach(s=>s.items.forEach((it,i)=>it.id=s.id+(i+1)));
+
+/* Horário diário em minutos desde a meia-noite */
+const BLOCKS = [
+  {a:480,b:615,k:"logica",cyc:4},{a:615,b:630,k:"pausa",n:"Pausa longa"},{a:630,b:700,k:"slot2",cyc:2},{a:700,b:770,k:"html",cyc:2},
+  {a:770,b:840,k:"pausa",n:"Almoço"},{a:840,b:910,k:"css",cyc:2},{a:910,b:980,k:"sql",cyc:2},{a:980,b:995,k:"pausa",n:"Pausa longa"},
+  {a:995,b:1065,k:"ia",cyc:2},{a:1065,b:1080,k:"diario"}
+];
+
+function nextOpen(prefix, filterFn){
+  const sec = SECTIONS.find(s=>s.id===prefix);
+  const it = sec.items.find((x,i)=>(!filterFn||filterFn(x,i)) && (state.itens[x.id]||0)<2);
+  return it ? it.nm : null;
+}
+function logicaTxt(w){
+  const f1 = ["","Tema 1: variáveis e tipos (cap. 01 a 07) + Pensamento computacional","Tema 2: condicionais (cap. 08) + Java: criando a sua primeira aplicação","Tema 3: laços (cap. 10) + Praticando Java: laços","Tema 4: arrays e listas (cap. 09)","Tema 5: algoritmos básicos (aprenda o básico de métodos antes)","Tema 6: revisão e Arena de Lógica"];
+  if(w<=6) return f1[w];
+  const m = {7:"Ficha v1: classes e objetos (cap. 11)",8:"Ficha v2: encapsulamento (cap. 12)",9:"Ficha v3: herança e polimorfismo (cap. 13 e 14)",10:"Ficha v3: herança e polimorfismo (cap. 13 e 14)",11:"Ficha v4: interfaces (cap. 15)",12:"Ficha v5: coleções + desafio da loja",13:"Exceções e depurador; caça ao bug",14:"Exceções e depurador; caça ao bug",15:"Boas práticas e revisão de código",16:"Ficha v6: sistema de batalha",17:"Curso de REST API com Spring Boot",18:"API da Ficha: CRUD de personagens",19:"Lambdas, streams e Spring Framework (Alura)",20:"Spring Boot 3: API Rest (Alura)",21:"Spring Boot 3: API Rest (Alura)",22:"Spring Boot 3: boas práticas (Alura)",23:"JUnit: TDD e Java (Alura)",24:"Testes JUnit na API da Ficha"};
+  return m[w]||"Revisão";
+}
+function blockInfo(b,w){
+  if(b.k==="pausa") return {tr:b.n, what:"Longe da tela", c:"--line", pause:true};
+  if(b.k==="diario") return {tr:TR.diario.n, what: w>=3?"Anote o que aprendeu e faça commit e push no GitHub":"Anote o que aprendeu, o que travou e a primeira tarefa de amanhã", c:TR.diario.c};
+  if(b.k==="logica") return {tr:TR.logica.n, what:logicaTxt(w), c:TR.logica.c};
+  if(b.k==="slot2"){
+    if(w<=2) return {tr:"SQL (2ª hora)", what:"SQLite online: conhecendo instruções SQL", c:TR.sql.c};
+    if(w===3) return {tr:TR.git.n, what:"Curso de Git: "+(nextOpen("g")||"curso concluído, pratique"), c:TR.git.c};
+    if(w===4) return {tr:TR.git.n, what:"Prática: repositório novo do zero, conflito de merge, Git pelo IntelliJ", c:TR.git.c};
+    return {tr:TR.js.n, what:nextOpen("a",x=>x.tr==="js")||"Trilha de JavaScript concluída: crie um projeto seu", c:TR.js.c};
+  }
+  if(b.k==="html") return {tr:TR.html.n, what: w<=2?"HTML e CSS: ambiente, estrutura e estilo":(w<=5?"HTML e CSS: ambientes de desenvolvimento, estrutura de arquivos e tags":"Projeto: sua página de portfólio"), c:TR.html.c};
+  if(b.k==="css") return {tr:TR.css.n, what: w<=2?"HTML e CSS: ambiente, estrutura e estilo (mesmo curso)":(w<=5?"HTML e CSS: classes, posicionamento e Flexbox":"Praticando HTML e CSS"), c:TR.css.c};
+  if(b.k==="sql") return {tr:TR.sql.n, what: w<=2?"SQLite online: conhecendo instruções SQL":(nextOpen("a",x=>x.tr==="sql")||"Projeto: banco da Ficha de Personagem"), c:TR.sql.c};
+  if(b.k==="ia"){
+    const t = w<=2?"Claude Code: criando sua primeira aplicação (Alura)":w<=8?"Claude Code 101 (Anthropic Academy)":w<=12?"Engenharia de Prompt (Alura)":w<=16?"Claude Code in Action (Anthropic Academy)":"Cursos avançados da Anthropic Academy";
+    return {tr:TR.ia.n, what:t+". 2º ciclo: revise com o Claude Code o que fez hoje", c:TR.ia.c};
+  }
+}
+function phase(w){ return w<=6?"Fase 1 · Lógica":w<=12?"Fase 2 · Orientação a Objetos":w<=16?"Fase 3 · Análise de código":w<=22?"Fase 4 · Spring Boot":"Fase 5 · Testes com JUnit"; }
+
+/* ---------- Quiz ---------- */
+const QUIZ = {
+"Variáveis e tipos":[
+ ["Qual tipo é o mais indicado para guardar o preço de um produto, como 19,90?",["int","double","boolean","char"],1,"double guarda números com casas decimais. int só guarda inteiros."],
+ ["Em Java, quanto vale a expressão <code>7 / 2</code> quando os dois números são int?",["3.5","3","4","Dá erro"],1,"Divisão entre inteiros descarta a parte decimal. Para obter 3.5, um dos números precisa ser decimal: <code>7.0 / 2</code>."],
+ ["Quanto vale <code>17 % 5</code>?",["3","2","3.4","5"],1,"O operador % devolve o resto da divisão: 17 dividido por 5 dá 3 e sobra 2."],
+ ["Qual destes nomes de variável é válido em Java?",["2nota","nota-2","nota2","class"],2,"Nomes não podem começar com número, não aceitam hífen e não podem ser palavras reservadas como class."],
+ ["O que <code>System.out.println((int) 9.99);</code> imprime?",["10","9.99","9","Dá erro"],2,"O casting para int corta a parte decimal, sem arredondar."]],
+"Condicionais":[
+ ["Com <code>a = 5</code> e <code>b = 8</code>, quanto vale <code>a > 3 && b < 5</code>?",["true","false"],1,"&& só dá true se as duas partes forem verdadeiras. b < 5 é falso."],
+ ["Como comparar o conteúdo de dois textos em Java?",["texto == \"sim\"","texto.equals(\"sim\")","texto = \"sim\"","texto.compare(\"sim\")"],1,"equals compara o conteúdo. O == compara se são o mesmo objeto na memória e pode falhar com textos iguais."],
+ ["Qual estrutura compara uma variável com vários valores fixos de forma organizada?",["for","switch","while","try"],1,"O switch é feito para escolher entre vários casos de uma mesma variável."],
+ ["Com <code>idade = 18</code>, o que resulta de <code>idade >= 18 ? \"adulto\" : \"menor\"</code>?",["\"adulto\"","\"menor\"","true","Dá erro"],0,"O ternário devolve o primeiro valor quando a condição é verdadeira, e 18 >= 18 é verdadeiro."],
+ ["Com <code>x = 12</code>, em <code>if (x > 10) A; else if (x > 5) B; else C;</code>, o que é executado?",["A e B","Só A","Só B","A, B e C"],1,"No if/else if, só o primeiro bloco com condição verdadeira roda. Os outros são ignorados."]],
+"Laços":[
+ ["Quantas vezes o laço <code>for (int i = 0; i < 5; i++)</code> repete?",["4","5","6","Infinitas"],1,"i vale 0, 1, 2, 3 e 4. Quando chega a 5, a condição i < 5 fica falsa."],
+ ["Qual laço sempre executa o bloco pelo menos uma vez?",["for","while","do-while","for-each"],2,"No do-while, a condição só é testada depois da primeira execução."],
+ ["O que costuma causar um laço infinito?",["Usar for em vez de while","A condição nunca ficar falsa","Ter um break dentro","Usar variáveis int"],1,"Se a variável da condição nunca muda dentro do laço, ele nunca termina."],
+ ["O que o comando <code>break</code> faz dentro de um laço?",["Pula para a próxima volta","Sai do laço imediatamente","Reinicia o laço","Encerra o programa"],1,"break sai do laço. Para pular só a volta atual, usa-se continue."],
+ ["Qual é o valor de <code>soma</code> depois de <code>for (int i = 1; i <= 4; i++) soma += i;</code>, começando em 0?",["4","6","10","24"],2,"1 + 2 + 3 + 4 = 10."]],
+"Arrays":[
+ ["Qual é o índice do primeiro elemento de um array em Java?",["0","1","-1","Depende do tamanho"],0,"Os índices começam em 0."],
+ ["Num array de tamanho 5, qual é o último índice válido?",["5","4","6","0"],1,"Os índices vão de 0 até length - 1, ou seja, de 0 a 4."],
+ ["O que acontece ao acessar <code>v[5]</code> num array de 5 posições?",["Devolve 0","Devolve null","ArrayIndexOutOfBoundsException","O array cresce"],2,"A posição 5 não existe, então o Java lança essa exceção."],
+ ["Qual a principal diferença entre array e ArrayList?",["Array só guarda texto","O array tem tamanho fixo; o ArrayList cresce","ArrayList é mais rápido sempre","Não há diferença"],1,"O tamanho do array é definido na criação. O ArrayList aumenta conforme você adiciona itens."],
+ ["Como saber quantos elementos tem um array <code>v</code>?",["v.size()","v.length","v.count()","length(v)"],1,"Arrays usam length, sem parênteses. ArrayList usa size()."]],
+"Git e GitHub":[
+ ["Qual comando salva uma nova versão do projeto no histórico?",["git add","git commit","git push","git status"],1,"commit grava um ponto na história do projeto, com uma mensagem."],
+ ["Para que serve <code>git add</code>?",["Envia para o GitHub","Coloca as mudanças na área de preparação para o próximo commit","Cria um repositório","Apaga arquivos"],1,"add prepara (staging) o que vai entrar no próximo commit."],
+ ["O que <code>git push</code> faz?",["Baixa mudanças do GitHub","Envia seus commits para o repositório remoto, como o GitHub","Cria uma branch","Desfaz o último commit"],1,"push envia. Para baixar, usa-se pull."],
+ ["O que é uma branch?",["Um backup automático","Uma linha separada de desenvolvimento","Um tipo de commit","Um arquivo de configuração"],1,"Na branch você muda o código sem afetar a linha principal, e depois junta com merge."],
+ ["Para que serve o arquivo .gitignore?",["Listar quem pode editar","Listar arquivos e pastas que o Git não deve versionar","Ignorar erros de compilação","Guardar senhas"],1,"Nele você coloca pastas como .idea/ e out/, que não devem ir para o GitHub."]],
+"SQL":[
+ ["Qual comando consulta dados de uma tabela?",["GET","SELECT","FIND","SHOW"],1,"SELECT escolhe as colunas e FROM indica a tabela."],
+ ["Qual cláusula filtra as linhas de uma consulta?",["ORDER BY","WHERE","GROUP BY","FROM"],1,"WHERE define a condição que cada linha precisa cumprir."],
+ ["Qual comando adiciona uma nova linha a uma tabela?",["ADD ROW","INSERT INTO","UPDATE","CREATE"],1,"INSERT INTO tabela (colunas) VALUES (valores)."],
+ ["O que acontece com um <code>UPDATE</code> sem <code>WHERE</code>?",["Dá erro","Altera só a primeira linha","Altera todas as linhas da tabela","Não altera nada"],2,"Sem WHERE, todas as linhas são alteradas. Por isso sempre confira o WHERE antes de rodar."],
+ ["Como contar quantas linhas tem a tabela <code>personagem</code>?",["SELECT SUM(*) FROM personagem","SELECT COUNT(*) FROM personagem","COUNT personagem","SELECT TOTAL FROM personagem"],1,"COUNT(*) conta as linhas do resultado."]],
+"HTML":[
+ ["Qual tag marca o título principal de uma página?",["<title>","<h1>","<head>","<header>"],1,"h1 é o título principal visível. A tag title é o nome que aparece na aba do navegador."],
+ ["Qual tag cria um link?",["<link>","<a>","<href>","<url>"],1,"<a href=\"...\"> cria o link; href é o endereço."],
+ ["Qual tag semântica agrupa os links de navegação do site?",["<div>","<nav>","<menu>","<span>"],1,"nav indica ao navegador e a leitores de tela que ali está a navegação."],
+ ["Onde fica a tag <code>&lt;title&gt;</code>?",["Dentro de <body>","Dentro de <head>","Dentro de <footer>","Em qualquer lugar"],1,"title faz parte dos metadados, que ficam no head."],
+ ["Para que serve o atributo <code>alt</code> de uma imagem?",["Definir o tamanho","Texto alternativo que descreve a imagem","O endereço da imagem","Um efeito de hover"],1,"alt é lido por leitores de tela e aparece se a imagem não carregar."]],
+"CSS":[
+ ["Como selecionar no CSS os elementos com <code>class=\"destaque\"</code>?",["#destaque","destaque",".destaque","*destaque"],2,"Ponto para classe, cerquilha (#) para id."],
+ ["Qual propriedade muda a cor do texto?",["background-color","font-color","color","text-color"],2,"color muda o texto; background-color muda o fundo."],
+ ["Num container com <code>display: flex</code>, qual propriedade distribui os itens no eixo principal?",["align-items","justify-content","flex-wrap","gap"],1,"justify-content distribui no eixo principal; align-items alinha no eixo cruzado."],
+ ["Qual a ordem do box model, de dentro para fora?",["margin, border, padding, conteúdo","conteúdo, padding, border, margin","padding, conteúdo, margin, border","conteúdo, margin, padding, border"],1,"O padding fica entre o conteúdo e a borda; a margin fica do lado de fora da borda."],
+ ["Para que serve uma media query?",["Carregar vídeos","Aplicar estilos de acordo com o tamanho da tela","Importar fontes","Criar animações"],1,"Com @media você adapta o layout para celular, tablet e computador."]],
+"Claude Code":[
+ ["Nas Fases 1 e 2 do plano, qual é o papel do Claude Code?",["Escrever o código por você","Professor: explica, dá dicas e revisa o que você escreveu","Corrigir tudo automaticamente","Nenhum"],1,"Até a semana 12 ele ensina e revisa. Você escreve o código."],
+ ["O que é o arquivo CLAUDE.md?",["Um log de erros","Instruções que o Claude Code lê em toda sessão do projeto","O README do GitHub","Um arquivo de configuração do Java"],1,"Nele você coloca o contexto e o modo professor, por exemplo: não escreva código sem eu pedir."],
+ ["Antes de aprovar uma edição proposta pelo Claude Code, o que você deve fazer?",["Aprovar logo para ganhar tempo","Ler a mudança e entender cada linha","Pedir outra resposta","Nada"],1,"Regra de ouro: nunca aceite código que você não consegue explicar linha por linha."],
+ ["Qual destes pedidos segue melhor as regras de ouro?",["\"Resolva o exercício 5 para mim\"","\"Me diga qual conceito estou errando, sem me dar o código\"","\"Reescreva tudo\"","\"Faça mais rápido\""],1,"Pedir dica em vez de solução é o que constrói a sua lógica."],
+ ["Na Fase 5, qual é a regra para mudanças do Claude Code?",["Aceitar se compilar","Nenhuma mudança entra sem os testes passando","Só aceitar às sextas","Aceitar sempre"],1,"Com testes JUnit, você prova que a mudança não quebrou nada."]]
+};
+
+/* ---------- Estado ---------- */
+const DEF = {inicio:"2026-11-09", itens:{}, exercicios:[0,0,0,0,0,0], feitos:{}, dia:{}, quiz:{}, ciclos:{}};
+let state = JSON.parse(JSON.stringify(DEF));
+let db = null, docRef = null, saving = false, pending = false, saveTimer = null, dbOk = false;
+function lsGet(){ try{ const s = localStorage.getItem("estudo-java-cc"); return s?JSON.parse(s):null; }catch(e){ return null; } }
+function lsSet(){ try{ localStorage.setItem("estudo-java-cc", JSON.stringify(state)); }catch(e){} }
+function merge(src){ if(!src) return; src = JSON.parse(JSON.stringify(src)); state = Object.assign(JSON.parse(JSON.stringify(DEF)), src); if(!Array.isArray(state.exercicios)||state.exercicios.length!==6) state.exercicios=[0,0,0,0,0,0]; if(!state.feitos||typeof state.feitos!=="object") state.feitos={}; }
+function showErr(err){ try{ setSave("Erro: "+(err&&err.message?err.message:String(err))); }catch(e){} }
+window.addEventListener("error",e=>showErr(e.error||e.message));
+window.addEventListener("unhandledrejection",e=>showErr(e.reason));
+function setSave(t){ document.getElementById("saveState").textContent = t; }
+let touched=false;
+function scheduleSave(){
+  touched=true;
+  lsSet();
+  if(!docRef){ setSave("Salvo neste navegador"); return; }
+  setSave("Salvando…");
+  clearTimeout(saveTimer); saveTimer = setTimeout(flush, 700);
+}
+async function flush(){
+  if(saving){ pending = true; return; }
+  saving = true;
+  try{ await docRef.set(JSON.parse(JSON.stringify(state))); setSave("Progresso salvo"); }
+  catch(e){ setSave(e && e.code==="invalid_argument" ? "Só leitura: o progresso não é salvo" : "Não foi possível salvar agora; salvo neste navegador"); }
+  saving = false;
+  if(pending){ pending = false; flush(); }
+}
+
+/* ---------- Datas ---------- */
+function today(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function weekInfo(){
+  const [y,m,d] = (state.inicio||DEF.inicio).split("-").map(Number);
+  const start = new Date(y,m-1,d); const now = new Date(); now.setHours(0,0,0,0);
+  const days = Math.round((now-start)/864e5);
+  if(days<0) return {w:1, before:true, days:-days};
+  return {w:Math.min(24, Math.floor(days/7)+1), before:false, after:days>=168};
+}
+
+/* ---------- Render: Hoje ---------- */
+function fmt(min){ return String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0"); }
+function renderHeader(){
+  const wi = weekInfo();
+  document.getElementById("weekChip").innerHTML = wi.before ? "Começa em <b>"+wi.days+(wi.days===1?" dia":" dias")+"</b>" : "Semana <b>"+wi.w+"</b> de 24";
+  document.getElementById("phaseChip").textContent = phase(wi.w);
+}
+function currentBlock(){
+  const d=new Date(); const m=d.getHours()*60+d.getMinutes();
+  return BLOCKS.findIndex(b=>m>=b.a && m<b.b);
+}
+function dayState(){
+  if(!state.dia||typeof state.dia!=="object") state.dia={};
+  const k=today();
+  /* guarda só o dia de hoje */
+  Object.keys(state.dia).forEach(x=>{ if(x!==k) delete state.dia[x]; });
+  if(!state.dia[k]||typeof state.dia[k]!=="object") state.dia[k]={atual:null, feitos:[]};
+  const d=state.dia[k];
+  if(!Array.isArray(d.feitos)) d.feitos = d.feitos&&typeof d.feitos==="object" ? Object.values(d.feitos).map(Number) : [];
+  if(typeof d.atual!=="number") d.atual=null;
+  return d;
+}
+function isStudy(b){ return b.k!=="pausa"; }
+function nextOpenBlock(ds, from){
+  for(let j=from;j<BLOCKS.length;j++) if(isStudy(BLOCKS[j]) && !ds.feitos.includes(j)) return j;
+  for(let j=0;j<from;j++) if(isStudy(BLOCKS[j]) && !ds.feitos.includes(j)) return j;
+  return null;
+}
+const CHECK='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function toggleDone(i){
+  const ds=dayState(); const w=weekInfo().w; const dow=new Date().getDay();
+  const byClock=(dow===0||dow===6)?-1:currentBlock(); const cur=ds.atual!=null?ds.atual:byClock;
+  if(ds.feitos.includes(i)) ds.feitos=ds.feitos.filter(x=>x!==i);
+  else { ds.feitos.push(i); if(cur===i) ds.atual=nextOpenBlock(ds,i+1); }
+  scheduleSave(); renderAgenda();
+}
+function selectBlock(i){ const ds=dayState(); ds.atual=(ds.atual===i)?null:i; scheduleSave(); renderAgenda(); }
+function agendaAct(e){
+  const li=e.target.closest("li[data-i]"); if(!li) return;
+  const i=+li.dataset.i;
+  if(e.target.closest(".chk")) toggleDone(i); else selectBlock(i);
+}
+(function(){
+  const ul=document.getElementById("agenda");
+  ul.addEventListener("click",e=>{ try{ agendaAct(e); }catch(err){ showErr(err); } });
+  ul.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ const t=e.target; if(t.classList.contains("chk")||t.matches("li[data-i]")){ e.preventDefault(); try{ agendaAct(e); }catch(err){ showErr(err); } } } });
+})();
+function renderAgenda(){
+  const wi = weekInfo(); const w = wi.w; const dow = new Date().getDay();
+  const ul = document.getElementById("agenda");
+  const weekend = dow===0||dow===6;
+  const ds = dayState();
+  const byClock = weekend ? -1 : currentBlock();
+  const cur = ds.atual!=null ? ds.atual : byClock;
+  document.getElementById("agTitle").textContent = wi.before ? "Prévia da semana 1" : "Agenda de hoje · semana "+w;
+  document.getElementById("agSub").textContent = (wi.before ? "O plano começa na segunda. " : (weekend ? "Fim de semana: descanso. Se quiser estudar, no máximo 4 ciclos. " : ""))+"Toque numa etapa para marcar onde você está. Toque no círculo para dar o visto quando quiser.";
+  const total = BLOCKS.filter(isStudy).length, nOk = ds.feitos.length;
+  document.getElementById("dayCount").textContent = nOk+" de "+total+" etapas"+(nOk===total?" · dia concluído":"");
+  document.getElementById("dayBar").style.width = Math.round(100*nOk/total)+"%";
+  ul.innerHTML = "";
+  BLOCKS.forEach((b,i)=>{
+    const inf = blockInfo(b,w);
+    const li = document.createElement("li");
+    const done = ds.feitos.includes(i);
+    if(inf.pause) li.className="pause";
+    else { li.className="study"+(done?" done":""); }
+    if(i===cur) li.classList.add("cur");
+    li.style.setProperty("--c","var("+inf.c+")");
+    const tag = i===cur ? ' <span class="badge">'+(ds.atual!=null?"você está aqui":"agora")+'</span>' : "";
+    li.innerHTML = '<span class="h">'+fmt(b.a)+"–"+fmt(b.b)+'</span><div><div class="tr">'+inf.tr+tag+(b.cyc?' <span class="meta" style="font-weight:400;color:var(--muted);font-size:12px">'+b.cyc+" ciclos</span>":"")+'</div><div class="what">'+inf.what+"</div></div>";
+    if(isStudy(b)){
+      li.tabIndex=0; li.setAttribute("aria-current", i===cur ? "step" : "false");
+      li.dataset.i=i;
+      const c=document.createElement("span"); c.className="chk"+(done?" on":""); c.innerHTML='<span class="bx">'+CHECK+'</span>';
+      c.setAttribute("role","checkbox"); c.setAttribute("tabindex","0"); c.setAttribute("aria-checked",done);
+      c.setAttribute("aria-label",(done?"Desmarcar ":"Concluir ")+inf.tr); c.title=done?"Feito":"Marcar visto";
+      li.appendChild(c);
+    }
+    ul.appendChild(li);
+  });
+  const nb = cur>=0 && cur!=null ? blockInfo(BLOCKS[cur],w) : null;
+  document.getElementById("tNow").textContent = nb ? nb.tr : "Escolha a etapa na agenda";
+  const wEx=EX.filter(e=>e[0]===w), wOk=wEx.filter(e=>state.feitos[e.id]).length;
+  document.getElementById("agNote").innerHTML = '<a class="exlink" href="#exercicios">Exercícios da semana '+w+': '+wOk+' de '+wEx.length+' feitos</a>. ' + (w>=3 ? "Lembrete: no fim do dia, commit e push no GitHub." : "Nas semanas 1 e 2, o horário das 10:30 também é de SQL. O GitHub começa na semana 3.");
+}
+
+/* ---------- Timer ---------- */
+const FOCO=30*60, PAUSA=5*60, LONGA=15*60;
+let tMode="foco", tTotal=FOCO, tLeft=FOCO, tEnd=null, tInt=null, audio=null;
+const C = 2*Math.PI*96;
+function drawTimer(){
+  const m=Math.floor(tLeft/60), s=Math.floor(tLeft%60);
+  const txt = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  document.getElementById("tLeft").textContent = txt;
+  const bar = document.getElementById("ringBar");
+  bar.style.strokeDasharray = C; bar.style.strokeDashoffset = C*(1-tLeft/tTotal);
+  const lbl = document.getElementById("modeLabel");
+  lbl.textContent = tMode==="foco"?"Foco":(tTotal===LONGA?"Pausa longa":"Pausa");
+  lbl.className = "mode";
+  document.getElementById("ring").className = "ring"+(tInt?" pausa":"");
+  document.title = tInt ? txt+" · "+(tMode==="foco"?"Foco":"Pausa") : "Estudo Java + Claude Code";
+  const bs=document.getElementById("bStart"); bs.textContent = tInt ? "Pausar" : (tLeft<tTotal ? "Continuar" : "Iniciar"); bs.classList.toggle("running", !!tInt); bs.classList.toggle("paused", !tInt && tLeft<tTotal);
+  const n = state.ciclos[today()]||0;
+  document.getElementById("cyc").textContent = n;
+  const dots = document.getElementById("dots"); dots.innerHTML="";
+  for(let i=0;i<14;i++){ const d=document.createElement("i"); if(i<n) d.className="f"; dots.appendChild(d); }
+}
+function beep(){
+  try{
+    if(!audio) return;
+    const now = audio.currentTime;
+    [0,0.35,0.7].forEach((t,i)=>{ const o=audio.createOscillator(), g=audio.createGain(); o.type="sine"; o.frequency.value = i===2?880:660; g.gain.setValueAtTime(0.0001,now+t); g.gain.exponentialRampToValueAtTime(0.25,now+t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,now+t+0.3); o.connect(g).connect(audio.destination); o.start(now+t); o.stop(now+t+0.32); });
+  }catch(e){}
+}
+function setMode(mode,total){ tMode=mode; tTotal=total; tLeft=total; tEnd=null; }
+function finish(){
+  stop(); beep();
+  if(tMode==="foco"){ const k=today(); state.ciclos[k]=(state.ciclos[k]||0)+1; scheduleSave(); setMode("pausa",PAUSA); }
+  else setMode("foco",FOCO);
+  drawTimer(); start();
+}
+function tick(){ tLeft=Math.max(0,(tEnd-Date.now())/1000); if(tLeft<=0){ finish(); return; } drawTimer(); }
+function start(){ if(tInt) return; tEnd=Date.now()+tLeft*1000; tInt=setInterval(tick,250); drawTimer(); }
+function stop(){ if(tInt){ clearInterval(tInt); tInt=null; } drawTimer(); }
+document.getElementById("bStart").addEventListener("click",()=>{
+  try{ if(!audio){ const A=window.AudioContext||window.webkitAudioContext; if(A) audio=new A(); } if(audio&&audio.state==="suspended") audio.resume(); }catch(e){}
+  if(tInt) stop(); else start();
+});
+document.getElementById("bSkip").addEventListener("click",()=>{ const was=!!tInt; stop(); setMode("pausa",PAUSA); drawTimer(); if(was) start(); });
+document.getElementById("bReset").addEventListener("click",()=>{ stop(); setMode("foco",FOCO); drawTimer(); });
+document.getElementById("bLong").addEventListener("click",()=>{ const was=!!tInt; stop(); setMode("pausa",LONGA); drawTimer(); if(was) start(); });
+document.getElementById("dayReset").addEventListener("click",()=>{ const ds=dayState(); ds.atual=null; ds.feitos=[]; scheduleSave(); renderAgenda(); });
+document.getElementById("startDate").addEventListener("change",e=>{ if(e.target.value){ state.inicio=e.target.value; scheduleSave(); renderAll(); } });
+
+/* ---------- Render: Progresso ---------- */
+const STL=["Pendente","Em andamento","OK"];
+function secStats(s){ const tot=s.items.length; const ok=s.items.filter(x=>(state.itens[x.id]||0)===2).length; return {tot,ok}; }
+function renderProgress(){
+  let tot=0, ok=0; SECTIONS.forEach(s=>{const r=secStats(s); tot+=r.tot; ok+=r.ok;});
+  const exTot = EX.length, exOk = EX.filter(e=>state.feitos[e.id]).length;
+  const totalCyc = Object.values(state.ciclos).reduce((a,b)=>a+b,0);
+  const pct = Math.round(100*(ok+exOk)/(tot+exTot));
+  const wi = weekInfo();
+  document.getElementById("tiles").innerHTML =
+    '<div class="tile"><div class="n">'+pct+'%</div><div class="l">do plano concluído (aulas, cursos e exercícios)</div><div class="pbar"><span style="width:'+pct+'%"></span></div></div>'+
+    '<div class="tile"><div class="n">'+ok+'<span style="font-size:18px;color:var(--muted)">/'+tot+'</span></div><div class="l">aulas e cursos com OK</div></div>'+
+    '<div class="tile"><div class="n">'+exOk+'<span style="font-size:18px;color:var(--muted)">/'+exTot+'</span></div><div class="l">exercícios feitos</div></div>'+
+    '<div class="tile"><div class="n">'+totalCyc+'</div><div class="l">ciclos de foco completos ('+(Math.round(totalCyc*30/6)/10).toLocaleString("pt-BR")+' h)</div></div>'+
+    '<div class="tile"><div class="n">'+(wi.before?0:wi.w)+'<span style="font-size:18px;color:var(--muted)">/24</span></div><div class="l">semana do plano</div></div>';
+  const wrap = document.getElementById("sections");
+  const openIds = Array.from(wrap.querySelectorAll("details[open]")).map(d=>d.dataset.id);
+  wrap.innerHTML="";
+  wrap.onclick=e=>{ if(e.target.closest("summary")) e.preventDefault(); };
+  SECTIONS.forEach((s,si)=>{
+    const r=secStats(s); const p=Math.round(100*r.ok/r.tot);
+    const d=document.createElement("details"); d.className="sec"; d.dataset.id=s.id;
+    d.open=true;
+    d.innerHTML='<summary><span><span class="t">'+s.t+'</span><br><span class="meta" style="font-size:12px;color:var(--muted)">'+s.sub+'</span></span><span class="c">'+r.ok+"/"+r.tot+'</span><div class="pbar" style="--c:var('+s.c+')"><span style="width:'+p+'%"></span></div></summary>';
+    const ul=document.createElement("ul"); ul.className="items";
+    s.items.forEach(it=>{
+      const v=state.itens[it.id]||0;
+      const li=document.createElement("li");
+      li.innerHTML='<div><div class="nm">'+it.nm+'</div>'+(it.meta?'<div class="meta">'+it.meta+'</div>':"")+'</div>';
+      const b=document.createElement("button"); b.type="button"; b.className="st"; b.dataset.s=v; b.textContent=STL[v];
+      b.setAttribute("aria-label",it.nm+": "+STL[v]+". Toque para mudar.");
+      b.addEventListener("click",()=>{ state.itens[it.id]=((state.itens[it.id]||0)+1)%3; scheduleSave(); renderProgress(); renderAgenda(); });
+      li.appendChild(b); ul.appendChild(li);
+    });
+    d.appendChild(ul); wrap.appendChild(d);
+  });
+  /* Exercícios por trilha */
+  const d=document.createElement("details"); d.className="sec"; d.dataset.id="ex";
+  d.open=true;
+  const p2=Math.round(100*exOk/exTot);
+  d.innerHTML='<summary><span><span class="t">Exercícios</span><br><span class="meta" style="font-size:12px;color:var(--muted)">Marque na aba Exercícios</span></span><span class="c">'+exOk+"/"+exTot+'</span><div class="pbar"><span style="width:'+p2+'%"></span></div></summary>';
+  const ul=document.createElement("ul"); ul.className="items";
+  EX_TRACKS.forEach(k=>{
+    const all=EX.filter(e=>e[1]===k), ok=all.filter(e=>state.feitos[e.id]).length, p=Math.round(100*ok/all.length);
+    const li=document.createElement("li"); li.style.gridTemplateColumns="1fr";
+    li.innerHTML='<div><div class="nm" style="display:flex;justify-content:space-between;gap:8px"><span>'+EX_NAME[k]+'</span><span class="meta" style="font-family:var(--mono)">'+ok+'/'+all.length+'</span></div><div class="pbar" style="--c:var('+TR[k].c+');margin-top:6px"><span style="width:'+p+'%"></span></div></div>';
+    ul.appendChild(li);
+  });
+  d.appendChild(ul); wrap.appendChild(d);
+}
+
+/* ---------- Render: Exercícios ---------- */
+const EX_TRACKS=["logica","sql","git","js","html","css","ia"];
+const EX_NAME={logica:"Java",sql:"SQL",git:"Git",js:"JavaScript",html:"HTML",css:"CSS",ia:"IA e Claude Code"};
+const LV=["","Fácil","Médio","Difícil"];
+let exWeek=null, exTrack="todas", exHide=false;
+function esc(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/`([^`]+)`/g,"<code>$1</code>"); }
+function renderExFilters(){
+  const sel=document.getElementById("exWeek"); const wi=weekInfo();
+  if(exWeek===null) exWeek=String(wi.w);
+  let o='<option value="todas">Todas</option>';
+  for(let w=1;w<=24;w++){ const n=EX.filter(e=>e[0]===w).length; if(!n) continue; o+='<option value="'+w+'">Semana '+w+(w===wi.w&&!wi.before?" (atual)":"")+" · "+n+"</option>"; }
+  sel.innerHTML=o; sel.value=exWeek;
+  const box=document.getElementById("exTracks"); box.innerHTML="";
+  ["todas"].concat(EX_TRACKS).forEach(k=>{
+    const b=document.createElement("button"); b.type="button"; b.setAttribute("aria-pressed",k===exTrack);
+    b.innerHTML=(k==="todas"?"":'<i style="--c:var('+TR[k].c+')"></i>')+(k==="todas"?"Todas":EX_NAME[k]);
+    b.addEventListener("click",()=>{ exTrack=k; renderExFilters(); renderEx(); });
+    box.appendChild(b);
+  });
+}
+function renderEx(){
+  const list=document.getElementById("exList");
+  const okAll=EX.filter(e=>state.feitos[e.id]).length;
+  document.getElementById("exStat").innerHTML='<b>'+okAll+'</b> / '+EX.length+' feitos';
+  let rows=EX.filter(e=>(exWeek==="todas"||e[0]===+exWeek)&&(exTrack==="todas"||e[1]===exTrack));
+  const totalSel=rows.length, okSel=rows.filter(e=>state.feitos[e.id]).length;
+  if(exHide) rows=rows.filter(e=>!state.feitos[e.id]);
+  if(!rows.length){ list.innerHTML='<div class="empty">'+(totalSel?"Tudo feito neste filtro. Bom trabalho.":"Nenhum exercício para este filtro.")+'</div>'; return; }
+  const weeks=[...new Set(rows.map(e=>e[0]))].sort((a,b)=>a-b);
+  list.innerHTML="";
+  weeks.forEach(w=>{
+    const sec=document.createElement("div"); sec.className="exweek";
+    const inW=EX.filter(e=>e[0]===w&&(exTrack==="todas"||e[1]===exTrack));
+    const okW=inW.filter(e=>state.feitos[e.id]).length;
+    sec.innerHTML='<h3>Semana '+w+' <span>'+okW+'/'+inW.length+'</span></h3><p class="ph">'+phase(w)+' · Java: '+logicaTxt(w)+'</p>';
+    EX_TRACKS.forEach(k=>{
+      const its=rows.filter(e=>e[0]===w&&e[1]===k); if(!its.length) return;
+      const all=EX.filter(e=>e[0]===w&&e[1]===k); const ok=all.filter(e=>state.feitos[e.id]).length;
+      const g=document.createElement("div"); g.className="exgrp"; g.style.setProperty("--c","var("+TR[k].c+")");
+      g.innerHTML='<div class="gh">'+EX_NAME[k]+'<span>'+ok+'/'+all.length+'</span></div>';
+      its.forEach(e=>{
+        const n=EX.filter(x=>x[0]===e[0]&&x[1]===e[1]).indexOf(e)+1;
+        const lab=document.createElement("label"); lab.className="exitem"+(state.feitos[e.id]?" done":"");
+        lab.innerHTML='<input type="checkbox"'+(state.feitos[e.id]?" checked":"")+'><span class="tx"><b>'+n+'.</b> '+esc(e[3])+'</span><span class="lv lv'+e[2]+'">'+LV[e[2]]+'</span>';
+        lab.querySelector("input").addEventListener("change",ev=>{
+          if(ev.target.checked) state.feitos[e.id]=1; else delete state.feitos[e.id];
+          scheduleSave(); renderEx(); renderProgress(); renderAgenda();
+        });
+        g.appendChild(lab);
+      });
+      sec.appendChild(g);
+    });
+    list.appendChild(sec);
+  });
+}
+document.getElementById("exWeek").addEventListener("change",e=>{ exWeek=e.target.value; renderEx(); });
+document.getElementById("exHide").addEventListener("change",e=>{ exHide=e.target.checked; renderEx(); });
+
+/* ---------- Render: Quiz ---------- */
+let qTheme = Object.keys(QUIZ)[0], qMode="quiz", qIdx=0, qScore=0, qAnswered=false, qFlip=false;
+function renderThemes(){
+  const box=document.getElementById("themes"); box.innerHTML="";
+  Object.keys(QUIZ).forEach(t=>{
+    const b=document.createElement("button"); b.type="button"; b.setAttribute("aria-pressed",t===qTheme);
+    const best = state.quiz[t]; b.innerHTML=t+(best!=null?' <small>'+best+"/"+QUIZ[t].length+"</small>":"");
+    b.addEventListener("click",()=>{ qTheme=t; qIdx=0; qScore=0; qAnswered=false; qFlip=false; renderThemes(); renderQuiz(); });
+    box.appendChild(b);
+  });
+}
+function renderQuiz(){
+  const A=document.getElementById("qArea"); const qs=QUIZ[qTheme];
+  document.getElementById("mQuiz").setAttribute("aria-pressed",qMode==="quiz");
+  document.getElementById("mFlash").setAttribute("aria-pressed",qMode==="flash");
+  if(qMode==="flash"){
+    const q=qs[qIdx];
+    A.innerHTML='<div class="count">CARTÃO '+(qIdx+1)+" DE "+qs.length+'</div><div class="flash" id="card" tabindex="0" role="button" aria-label="Virar cartão">'+(qFlip?'<span class="side">Resposta</span><div class="txt">'+q[1][q[2]]+'</div><div class="ex">'+q[3]+'</div>':'<span class="side">Pergunta · toque para virar</span><div class="txt">'+q[0]+'</div>')+'</div><div class="qnav"><button class="btn" id="fPrev" type="button">Anterior</button><button class="btn primary" id="fNext" type="button">Próximo</button></div>';
+    const card=document.getElementById("card"); const flip=()=>{ qFlip=!qFlip; renderQuiz(); };
+    card.addEventListener("click",flip); card.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); flip(); } });
+    document.getElementById("fPrev").addEventListener("click",()=>{ qIdx=(qIdx-1+qs.length)%qs.length; qFlip=false; renderQuiz(); });
+    document.getElementById("fNext").addEventListener("click",()=>{ qIdx=(qIdx+1)%qs.length; qFlip=false; renderQuiz(); });
+    return;
+  }
+  if(qIdx>=qs.length){
+    const best=Math.max(qScore, state.quiz[qTheme]||0);
+    if(state.quiz[qTheme]!==best){ state.quiz[qTheme]=best; scheduleSave(); renderThemes(); }
+    const msg = qScore===qs.length?"Gabaritou. Passe para o próximo tema.":qScore>=3?"Bom resultado. Releia as explicações das que errou.":"Vale revisar a aula desse tema e tentar de novo.";
+    A.innerHTML='<div class="count">RESULTADO</div><h3>'+qScore+" de "+qs.length+" certas</h3><p>"+msg+'</p><div class="qnav"><button class="btn primary" id="qAgain" type="button">Refazer o quiz</button></div>';
+    document.getElementById("qAgain").addEventListener("click",()=>{ qIdx=0; qScore=0; qAnswered=false; renderQuiz(); });
+    return;
+  }
+  const q=qs[qIdx];
+  A.innerHTML='<div class="count">PERGUNTA '+(qIdx+1)+" DE "+qs.length+" · "+qScore+' CERTAS</div><h3>'+q[0]+'</h3><div class="opts" id="opts"></div><div class="fb" id="fb"></div><div class="qnav"><button class="btn primary" id="qNext" type="button" disabled>Próxima</button></div>';
+  const box=document.getElementById("opts");
+  q[1].forEach((o,i)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="opt"; b.innerHTML=o.replace(/</g,"&lt;").replace(/&lt;code>/g,"<code>").replace(/&lt;\/code>/g,"</code>");
+    b.addEventListener("click",()=>{
+      if(qAnswered) return; qAnswered=true;
+      const ok=i===q[2]; if(ok) qScore++;
+      Array.from(box.children).forEach((c,j)=>{ c.disabled=true; if(j===q[2]) c.classList.add("right"); else if(j===i) c.classList.add("wrong"); });
+      const fb=document.getElementById("fb"); fb.className="fb show"; fb.style.borderLeftColor= ok?"var(--ok)":"var(--bad)";
+      fb.innerHTML="<b>"+(ok?"Isso mesmo.":"Não foi dessa vez.")+"</b>"+q[3];
+      const n=document.getElementById("qNext"); n.disabled=false; n.textContent= qIdx===qs.length-1?"Ver resultado":"Próxima"; n.focus();
+    });
+    box.appendChild(b);
+  });
+  document.getElementById("qNext").addEventListener("click",()=>{ qIdx++; qAnswered=false; renderQuiz(); });
+}
+document.getElementById("mQuiz").addEventListener("click",()=>{ qMode="quiz"; qIdx=0; qScore=0; qAnswered=false; renderQuiz(); });
+document.getElementById("mFlash").addEventListener("click",()=>{ qMode="flash"; qIdx=0; qFlip=false; renderQuiz(); });
+
+/* ---------- Render: Linha do tempo ---------- */
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function renderTimeline(){
+  const svg=document.getElementById("tl"); const W=1000, L=130, R=12, cw=(W-L-R)/24, top=34, lh=40;
+  const lanes=[
+    {n:"Java",c:"--t-logica",bars:[[1,6,"Fase 1 · Lógica"],[7,12,"Fase 2 · OO"],[13,16,"Fase 3 · Análise"],[17,22,"Fase 4 · Spring Boot"],[23,24,"F5 · JUnit"]]},
+    {n:"10:30",c:"--t-git",bars:[[1,2,"SQL","--t-sql"],[3,4,"Git","--t-git"],[5,24,"JavaScript","--t-js"]]},
+    {n:"HTML",c:"--t-html",bars:[[1,2,"Curso base"],[3,5,"Semântica"],[6,24,"Projeto: portfólio"]]},
+    {n:"CSS",c:"--t-css",bars:[[1,2,"Curso base"],[3,5,"Flexbox"],[6,24,"Praticando HTML e CSS"]]},
+    {n:"SQL",c:"--t-sql",bars:[[1,2,"SQLite online"],[3,24,"Consultas, joins e banco da Ficha"]]},
+    {n:"IA",c:"--t-ia",bars:[[1,2,"Alura"],[3,8,"Claude Code 101"],[9,12,"Prompt"],[13,16,"In Action"],[17,24,"Cursos avançados"]]}
+  ];
+  const marks=[[3,"GitHub"],[6,"Arena"],[12,"Ficha v5"],[16,"Batalha"],[22,"API"],[24,"Testes"]];
+  const ink=cssVar("--ink"), muted=cssVar("--muted"), line=cssVar("--line"), acc=cssVar("--accent");
+  const H = top+lanes.length*lh+56; svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  let s="";
+  for(let w=1;w<=24;w++){ const x=L+(w-1)*cw; s+='<line x1="'+x+'" x2="'+x+'" y1="'+(top-6)+'" y2="'+(top+lanes.length*lh)+'" stroke="'+line+'" stroke-width="1"/>'; s+='<text x="'+(x+cw/2)+'" y="'+(top-12)+'" text-anchor="middle" font-size="11" fill="'+muted+'" font-family="JetBrains Mono, monospace">'+w+'</text>'; }
+  s+='<text x="0" y="'+(top-12)+'" font-size="11" fill="'+muted+'" font-family="IBM Plex Sans, sans-serif">semana</text>';
+  lanes.forEach((ln,i)=>{
+    const y=top+i*lh;
+    s+='<text x="0" y="'+(y+lh/2+4)+'" font-size="13" font-weight="600" fill="'+ink+'" font-family="IBM Plex Sans, sans-serif">'+ln.n+'</text>';
+    ln.bars.forEach(b=>{
+      const c=cssVar(b[3]||ln.c); const x=L+(b[0]-1)*cw+2, w=(b[1]-b[0]+1)*cw-4;
+      const maxCh=Math.floor((w-12)/6.4); let t=b[2]; if(t.length>maxCh) t = maxCh>=4 ? t.slice(0,maxCh-1)+"…" : "";
+      s+='<g><title>'+b[2]+' (semanas '+b[0]+(b[1]!==b[0]?"–"+b[1]:"")+')</title><rect x="'+x+'" y="'+(y+7)+'" width="'+w+'" height="'+(lh-14)+'" rx="6" fill="'+c+'" fill-opacity="0.16" stroke="'+c+'" stroke-width="1.25"/>';
+      if(t) s+='<text x="'+(x+8)+'" y="'+(y+lh/2+4)+'" font-size="11.5" fill="'+ink+'" font-family="IBM Plex Sans, sans-serif">'+t+'</text>';
+      s+='</g>';
+    });
+  });
+  const my = top+lanes.length*lh+22;
+  s+='<text x="0" y="'+(my+4)+'" font-size="13" font-weight="600" fill="'+ink+'" font-family="IBM Plex Sans, sans-serif">Marcos</text>';
+  marks.forEach(m=>{ const x=L+(m[0]-0.5)*cw; s+='<path d="M'+x+' '+(my-7)+'l7 7l-7 7l-7 -7z" fill="'+ink+'"/><text x="'+x+'" y="'+(my+24)+'" text-anchor="middle" font-size="11" fill="'+muted+'" font-family="IBM Plex Sans, sans-serif">'+m[1]+'</text>'; });
+  const wi=weekInfo();
+  if(!wi.before){ const x=L+(wi.w-0.5)*cw; s+='<line x1="'+x+'" x2="'+x+'" y1="'+(top-6)+'" y2="'+(top+lanes.length*lh)+'" stroke="'+acc+'" stroke-width="2" stroke-dasharray="5 4"/><text x="'+(x+4)+'" y="'+(top+lanes.length*lh+6)+'" font-size="11" font-weight="700" fill="'+acc+'" font-family="IBM Plex Sans, sans-serif">você está aqui</text>'; }
+  svg.innerHTML=s;
+  document.getElementById("tlSub").textContent = wi.before ? "O plano começa na segunda-feira. Passe o mouse sobre uma barra para ver o nome completo." : "A linha tracejada marca a semana "+wi.w+". Passe o mouse sobre uma barra para ver o nome completo.";
+  document.getElementById("legend").innerHTML = ["logica","sql","git","js","html","css","ia"].map(k=>'<span><i style="--c:var('+TR[k].c+')"></i>'+TR[k].n+'</span>').join("");
+}
+
+/* ---------- Navegação ---------- */
+const VIEWS=["hoje","exercicios","progresso","quiz","linha-do-tempo"];
+function route(){
+  const h=(location.hash||"#hoje").slice(1); const v=VIEWS.includes(h)?h:"hoje";
+  VIEWS.forEach(x=>document.getElementById("v-"+x).classList.toggle("on",x===v));
+  document.querySelectorAll("nav.tabs a").forEach(a=>{ if(a.dataset.view===v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  if(v==="linha-do-tempo") renderTimeline();
+}
+window.addEventListener("hashchange",route);
+function renderAll(){ document.getElementById("startDate").value=state.inicio; renderHeader(); renderAgenda(); drawTimer(); renderProgress(); renderExFilters(); renderEx(); renderThemes(); renderQuiz(); renderTimeline(); }
+setInterval(()=>{ renderAgenda(); renderHeader(); },60000);
+try{ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",renderTimeline); }catch(e){}
+new MutationObserver(renderTimeline).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+/* ---------- Início ---------- */
+merge(lsGet());
+renderAll(); route();
+setSave("Salvo neste navegador");
+(async function(){
+  try{
+    if(!window.claude || !window.claude.use){ return; }
+    db = await window.claude.use("db");
+    if(!db){ setSave("Salvo neste navegador"); return; }
+    docRef = db.doc("progresso/estado");
+    const timer = setTimeout(()=>setSave("Não deu para carregar o progresso salvo ainda"),10000);
+    const snap = await docRef.get();
+    clearTimeout(timer);
+    if(touched){ flush(); }
+    else if(snap.exists){ merge(snap.data()); lsSet(); renderAll(); setSave("Progresso salvo"); }
+    else { setSave("Pronto para salvar"); }
+  }catch(e){ setSave("Salvo neste navegador"); }
+})();
+})();
+</script>
+<script>
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
+</script>
+</body>
+</html>
